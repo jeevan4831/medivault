@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import Sidebar from '../components/dashboard/Sidebar.jsx'
 import TopNavbar from '../components/dashboard/TopNavbar.jsx'
 import MobileBottomNav from '../components/dashboard/MobileBottomNav.jsx'
+import BackendConnectionBanner from '../components/BackendConnectionBanner.jsx'
 import notificationService from '../services/notificationService.js'
 
 export default function DashboardLayout() {
@@ -45,6 +46,7 @@ export default function DashboardLayout() {
 
       {/* Main content wrapper */}
       <div className="flex flex-1 flex-col overflow-y-auto">
+        <BackendConnectionBanner />
         <TopNavbar
           onMenuClick={() => setSidebarOpen(true)}
           unreadNotifications={unreadNotifications}

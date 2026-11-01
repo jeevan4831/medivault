@@ -1,10 +1,12 @@
 import { Outlet } from 'react-router-dom'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
+import BackendConnectionBanner from '../components/BackendConnectionBanner.jsx'
 
 export default function MainLayout() {
   return (
     <div className="flex min-h-screen flex-col">
+      <BackendConnectionBanner />
       <Navbar />
       <main className="flex-1">
         <Outlet />

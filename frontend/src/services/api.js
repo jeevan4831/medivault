@@ -1,7 +1,15 @@
 import axios from 'axios'
 
-function getApiBaseUrl() {
-  // If explicitly configured via environment variable (e.g. production cloud backend URL), prioritize it
+export function getApiBaseUrl() {
+  // 1. Check user-configured override in localStorage (allows setting live backend URL from frontend)
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const customUrl = window.localStorage.getItem('medivault_api_base_url')
+    if (customUrl && customUrl.trim()) {
+      return customUrl.trim().replace(/\/+$/, '')
+    }
+  }
+
+  // 2. Prioritize explicitly configured environment variable (e.g. production cloud backend URL)
   if (import.meta.env.VITE_API_BASE_URL) {
     return import.meta.env.VITE_API_BASE_URL.replace(/\/+$/, '')
   }
@@ -21,6 +29,16 @@ function getApiBaseUrl() {
   return 'http://localhost:8000'
 }
 
+export function setApiBaseUrl(url) {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    if (url && url.trim()) {
+      window.localStorage.setItem('medivault_api_base_url', url.trim().replace(/\/+$/, ''))
+    } else {
+      window.localStorage.removeItem('medivault_api_base_url')
+    }
+  }
+}
+
 const api = axios.create({
   baseURL: getApiBaseUrl(),
   headers: {
@@ -32,18 +50,7 @@ const api = axios.create({
 // Request interceptor to attach JWT token and ensure network hostname alignment
 api.interceptors.request.use(
   (config) => {
-    // Only apply Wi-Fi IP override if VITE_API_BASE_URL is NOT set
-    if (!import.meta.env.VITE_API_BASE_URL && typeof window !== 'undefined' && window.location) {
-      const { hostname, protocol } = window.location
-      if (
-        hostname &&
-        hostname !== 'localhost' &&
-        hostname !== '127.0.0.1' &&
-        /^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(hostname)
-      ) {
-        config.baseURL = `${protocol}//${hostname}:8000`
-      }
-    }
+    config.baseURL = getApiBaseUrl()
     const token = localStorage.getItem('medivault_token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
