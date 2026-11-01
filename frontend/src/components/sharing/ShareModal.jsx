@@ -106,13 +106,13 @@ export default function ShareModal({
     if (shareResult && canvasRef.current) {
       const fullUrl = buildShareAccessUrl(shareResult.raw_token, lanIp || shareResult.lan_ip)
       QRCode.toCanvas(canvasRef.current, fullUrl, {
-        width: 220,
+        width: 260,
         margin: 2,
         color: {
           dark: '#0f172a', // slate-900
           light: '#ffffff',
         },
-        errorCorrectionLevel: 'H',
+        errorCorrectionLevel: 'M',
       }).catch((err) => {
         console.error('Failed to generate QR code canvas:', err)
       })

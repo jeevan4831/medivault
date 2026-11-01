@@ -30,14 +30,27 @@ export async function fetchLanIp() {
  */
 export function buildShareAccessUrl(rawToken, overrideLanIp = null) {
   if (!rawToken) return ''
-  const lanIp = overrideLanIp || cachedLanIp
-  const { protocol, hostname, port } = window.location
+  const { protocol, hostname, port, origin } = window.location
 
-  // If user is accessing from localhost or 127.0.0.1 and we have a valid LAN IP, use LAN IP
+  // 1. If currently on a public cloud domain (Vercel, Render, Tunnel, etc.), always use current public origin!
+  if (hostname && hostname !== 'localhost' && hostname !== '127.0.0.1') {
+    return `${origin}/shared-access/${rawToken}`
+  }
+
+  // 2. If user configured a custom public URL in localStorage
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const customPublic = window.localStorage.getItem('medivault_public_url')
+    if (customPublic && customPublic.trim()) {
+      return `${customPublic.trim().replace(/\/+$/, '')}/shared-access/${rawToken}`
+    }
+  }
+
+  // 3. Fallback to Wi-Fi / LAN IP if on local machine
+  const lanIp = overrideLanIp || cachedLanIp
   if (lanIp && (hostname === 'localhost' || hostname === '127.0.0.1')) {
     const portPart = port ? `:${port}` : ''
     return `${protocol}//${lanIp}${portPart}/shared-access/${rawToken}`
   }
 
-  return `${window.location.origin}/shared-access/${rawToken}`
+  return `${origin}/shared-access/${rawToken}`
 }

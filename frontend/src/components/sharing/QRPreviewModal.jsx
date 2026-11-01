@@ -41,13 +41,13 @@ export default function QRPreviewModal({ isOpen, onClose, share, onRevoked = nul
     if (isOpen && share && canvasRef.current && share.raw_token) {
       const fullUrl = buildShareAccessUrl(share.raw_token, lanIp || share.lan_ip)
       QRCode.toCanvas(canvasRef.current, fullUrl, {
-        width: 220,
+        width: 260,
         margin: 2,
         color: {
           dark: '#0f172a',
           light: '#ffffff',
         },
-        errorCorrectionLevel: 'H',
+        errorCorrectionLevel: 'M',
       }).catch((err) => {
         console.error('QR code render error:', err)
       })
