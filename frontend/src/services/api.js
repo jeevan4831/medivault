@@ -14,19 +14,8 @@ export function getApiBaseUrl() {
     return import.meta.env.VITE_API_BASE_URL.replace(/\/+$/, '')
   }
 
-  if (typeof window !== 'undefined' && window.location) {
-    const { hostname, protocol } = window.location
-    // If accessing via local private network IP on Wi-Fi (e.g. 192.168.x.x, 10.x.x.x), target port 8000
-    if (
-      hostname &&
-      hostname !== 'localhost' &&
-      hostname !== '127.0.0.1' &&
-      /^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(hostname)
-    ) {
-      return `${protocol}//${hostname}:8000`
-    }
-  }
-  return 'http://localhost:8000'
+  // 3. Default to empty string for relative proxying (works on localhost, LAN IP, and public tunnels via Vite proxy)
+  return ''
 }
 
 export function setApiBaseUrl(url) {
