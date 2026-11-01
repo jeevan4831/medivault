@@ -72,9 +72,17 @@ export default function RecipientAccessPage() {
       console.error('Failed to validate share token:', err)
       const status = err.response?.status || 500
       setErrorStatus(status)
-      setErrorMessage(
-        err.response?.data?.detail || 'Unable to access shared document with this token.'
-      )
+      if (status === 404) {
+        setErrorMessage(err.response?.data?.detail || 'This shared document link was not found or is invalid.')
+      } else if (status === 410) {
+        setErrorMessage(err.response?.data?.detail || 'This temporary share link has expired.')
+      } else if (status === 403) {
+        setErrorMessage(err.response?.data?.detail || 'Access to this shared document has been revoked by the owner.')
+      } else if (!err.response || err.code === 'ERR_NETWORK') {
+        setErrorMessage('Cannot connect to MediVault server. Please check your network connection.')
+      } else {
+        setErrorMessage(err.response?.data?.detail || 'Unable to access shared document with this token.')
+      }
     } finally {
       setIsLoading(false)
     }

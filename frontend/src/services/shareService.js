@@ -1,7 +1,4 @@
 import api from './api.js'
-import axios from 'axios'
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
 export const shareService = {
   /**
@@ -45,7 +42,7 @@ export const shareService = {
    * @param {string} token
    */
   async getSharedAccessInfo(token) {
-    const response = await axios.get(`${API_BASE_URL}/api/shared-access/${token}`)
+    const response = await api.get(`/api/shared-access/${token}`)
     return response.data
   },
 
@@ -55,7 +52,7 @@ export const shareService = {
    * @param {string} recipientIdentifier
    */
   async verifyRecipientIdentity(token, recipientIdentifier) {
-    const response = await axios.post(`${API_BASE_URL}/api/shared-access/${token}/verify`, {
+    const response = await api.post(`/api/shared-access/${token}/verify`, {
       recipient_identifier: recipientIdentifier,
     })
     return response.data
@@ -66,7 +63,7 @@ export const shareService = {
    * @param {string} token
    */
   async getSharedAccessViewBlob(token) {
-    const response = await axios.get(`${API_BASE_URL}/api/shared-access/${token}/view`, {
+    const response = await api.get(`/api/shared-access/${token}/view`, {
       responseType: 'blob',
     })
     return response.data
@@ -78,7 +75,7 @@ export const shareService = {
    * @param {string} filename
    */
   async downloadSharedDocument(token, filename) {
-    const response = await axios.get(`${API_BASE_URL}/api/shared-access/${token}/download`, {
+    const response = await api.get(`/api/shared-access/${token}/download`, {
       responseType: 'blob',
     })
 
