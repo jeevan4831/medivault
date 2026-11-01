@@ -53,3 +53,4 @@ databases:
     databaseName: medivault
     user: medivault_user
     plan: free
+
