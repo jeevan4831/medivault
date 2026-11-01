@@ -3,9 +3,12 @@
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
+      "source": "/api/:match*",
+      "destination": "https://medivault-api-jeevan.onrender.com/api/:match*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
 }
-

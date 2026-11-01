@@ -14,7 +14,15 @@ export function getApiBaseUrl() {
     return import.meta.env.VITE_API_BASE_URL.replace(/\/+$/, '')
   }
 
-  // 3. Default to empty string for relative proxying (works on localhost, LAN IP, and public tunnels via Vite proxy)
+  // 3. When deployed on public cloud domains (Vercel/Render), use your live Render cloud backend
+  if (typeof window !== 'undefined' && window.location) {
+    const { hostname } = window.location
+    if (hostname && (hostname.endsWith('.vercel.app') || hostname.endsWith('.onrender.com'))) {
+      return 'https://medivault-api-jeevan.onrender.com'
+    }
+  }
+
+  // 4. Default to empty string for relative proxying (works on localhost, LAN IP, and public tunnels via Vite proxy)
   return ''
 }
 
