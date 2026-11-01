@@ -7,8 +7,16 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
 
 _backend_dir = Path(__file__).resolve().parent.parent
-_env_path = _backend_dir / ".env"
-_storage_dir = _backend_dir.parent / "storage"
+_project_root = _backend_dir.parent
+_storage_dir = _project_root / "storage"
+
+_candidate_env_files = [
+    _backend_dir / ".env",
+    _backend_dir / ".env.local",
+    _project_root / ".env",
+    _project_root / ".env.local",
+]
+_existing_env_files = [str(f) for f in _candidate_env_files if f.exists()]
 
 
 class Settings(BaseSettings):
@@ -39,7 +47,7 @@ class Settings(BaseSettings):
     enable_permission_cleanup_task: bool = True
 
     model_config = SettingsConfigDict(
-        env_file=str(_env_path) if _env_path.exists() else ".env",
+        env_file=_existing_env_files if _existing_env_files else ".env",
         extra="ignore",
     )
 

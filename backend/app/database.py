@@ -34,9 +34,22 @@ else:
 def _create_db_engine():
     if isinstance(DATABASE_URL, str) and DATABASE_URL.startswith("sqlite"):
         return create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+
+    connect_args = {}
+    if isinstance(DATABASE_URL, str) and "neon.tech" in DATABASE_URL:
+        import socket
+        from urllib.parse import urlparse
+        try:
+            parsed = urlparse(DATABASE_URL)
+            if parsed.hostname:
+                socket.gethostbyname(parsed.hostname)
+        except Exception:
+            connect_args["hostaddr"] = "52.14.39.200"
+
     try:
         eng = create_engine(
             DATABASE_URL,
+            connect_args=connect_args,
             pool_pre_ping=True,
             pool_recycle=3600,
             echo=settings.debug,
@@ -44,8 +57,8 @@ def _create_db_engine():
         with eng.connect() as conn:
             pass
         return eng
-    except Exception:
-        # Seamless local SQLite fallback when MySQL is unreachable
+    except Exception as e:
+        # Seamless local SQLite fallback when remote DB is unreachable
         from pathlib import Path
         backend_dir = Path(__file__).resolve().parent.parent
         db_file = (backend_dir / "medivault.db").as_posix()

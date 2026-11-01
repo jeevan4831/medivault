@@ -22,3 +22,4 @@ backend/storage/*
 .DS_Store
 .idea/
 .vscode/
+.neon
