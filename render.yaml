@@ -1,6 +1,6 @@
 services:
   # -------------------------------------------------------------
-  # 1. MediVault Python FastAPI Backend Service
+  # 1. MediVault Python FastAPI Backend Service (Free Tier)
   # -------------------------------------------------------------
   - type: web
     name: medivault-api
@@ -9,6 +9,7 @@ services:
     buildCommand: pip install --upgrade pip && pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/health
+    plan: free
     autoDeploy: true
     envVars:
       - key: APP_ENV
@@ -19,38 +20,6 @@ services:
         generateValue: true
       - key: STORAGE_ENCRYPTION_KEY
         generateValue: true
+      # Connects to your external free Neon / Supabase PostgreSQL database
       - key: DATABASE_URL
-        fromDatabase:
-          name: medivault-db
-          property: connectionString
-
-  # -------------------------------------------------------------
-  # 2. MediVault Vite React Frontend (Static Site)
-  # -------------------------------------------------------------
-  - type: web
-    name: medivault-web
-    runtime: static
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    autoDeploy: true
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_BASE_URL
-        fromService:
-          type: web
-          name: medivault-api
-          property: host
-
-databases:
-  # -------------------------------------------------------------
-  # 3. Managed PostgreSQL Database (Free Tier)
-  # -------------------------------------------------------------
-  - name: medivault-db
-    databaseName: medivault
-    user: medivault_user
-    plan: free
-
+        sync: false
